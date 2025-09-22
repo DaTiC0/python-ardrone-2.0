@@ -1,12 +1,12 @@
-<a href="https://flattr.com/submit/auto?user_id=venthur&url=http%3A%2F%2Fgithub.com%2Fventhur%2Fpython-ardrone" target="_blank"><img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0"></a>
+# Python AR.Drone 2.0 Library
 
 [![Video of the drone in action](https://img.youtube.com/vi/2HEV37GbUow/0.jpg)](https://www.youtube.com/watch?v=2HEV37GbUow "Click to go to the video.")
 
-A video of the library controlling a drone in action (click to jump to the video).
+A Python library for controlling the AR.Drone, updated for Python 3 compatibility.
 
-Getting Started:
-----------------
+---
 
+## Getting Started
 
 ```python
 import libardrone
@@ -17,67 +17,73 @@ drone.land()
 drone.halt()
 ```
 
-The drone's property `image` contains always the latest image from the camera.
-The drone's property `navdata` contains always the latest navdata.
+- `image`: Contains the latest image from the camera.
+- `navdata`: Contains the latest navigation data.
 
+---
 
-Demo:
------
+## Demo
 
-There is also a demo application included which shows the video from the drone
-and lets you remote-control the drone with the keyboard:
+A demo application is included, allowing you to control the drone and view its video feed using the keyboard:
 
-    RETURN      - takeoff
-    SPACE       - land
-    BACKSPACE   - reset (from emergency)
-    a/d         - left/right
-    w/s         - forward/back
-    1,2,...,0   - speed
-    UP/DOWN     - altitude
-    LEFT/RIGHT  - turn left/right
+| Key         | Action             |
+|-------------|--------------------|
+| RETURN      | Takeoff            |
+| SPACE       | Land               |
+| BACKSPACE   | Reset (emergency)  |
+| a/d         | Move left/right    |
+| w/s         | Move forward/back  |
+| 1,2,...,0   | Adjust speed       |
+| UP/DOWN     | Adjust altitude    |
+| LEFT/RIGHT  | Turn left/right    |
 
-Here is a [video] of the library in action:
+[Watch the demo video](http://youtu.be/2HEV37GbUow).
 
-  [video]: http://youtu.be/2HEV37GbUow
+---
 
-Repository:
------------
-
-
+## Repository
 
 This repository is a fork of the original AR.Drone Python library.
-Original repository: https://github.com/venthur/python-ardrone
+- **Original repository**: [venthur/python-ardrone](https://github.com/venthur/python-ardrone)
+- **Current fork**: [DaTiC0/python-ardrone-2.0](https://github.com/DaTiC0/python-ardrone-2.0)
 
-This fork is maintained at:
-  https://github.com/DaTiC0/python-ardrone-2.0
+---
 
+## Requirements & Installation
 
-Requirements:
--------------
+### Requirements
+- Python 3.12+
+- Pygame 2.x (for the demo)
+- Unmodified AR.Drone firmware 1.5.1
 
+### Installation
 
-Requirements & Installation:
----------------------------
-
-Tested and updated for:
-  * Python 3.12+
-  * Pygame 2.x (only for the demo)
-  * Unmodified AR.Drone firmware 1.5.1
-
-To install dependencies:
 ```bash
+# Create a virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
+
+# Install dependencies
 pip install pygame
 ```
 
 Psyco is no longer required or supported. All code is now Python 3 compatible.
 
+---
 
-License:
---------
+## License
 
+This software is published under the terms of the [MIT License](http://www.opensource.org/licenses/mit-license.php).
 
-This software is published under the terms of the MIT License:
-  http://www.opensource.org/licenses/mit-license.php
+---
+
+## Contributing
+
+Contributions are welcome! Feel free to fork this repository and submit pull requests.
+
+---
+
+## Acknowledgments
+
+Thanks to [venthur](https://github.com/venthur) for the original implementation.
 

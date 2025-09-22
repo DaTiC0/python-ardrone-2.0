@@ -45,7 +45,7 @@ def main():
     signal.signal(signal.SIGINT, signal_handler)
     
     pygame.init()
-    W, H = 320, 240
+    W, H = 640, 480
     screen = pygame.display.set_mode((W, H))
     pygame.display.set_caption("AR.Drone Demo - Connecting...")
     
@@ -132,47 +132,80 @@ def main():
             drone_connected = True
             pygame.display.set_caption("AR.Drone Demo - Connected")
         except:
-            # No drone connected - show instructions
+            # No drone connected - show instructions or test pattern
             screen.fill((50, 50, 50))
             f = pygame.font.Font(None, 24)
             f_small = pygame.font.Font(None, 16)
             
-            # Check if we have any data from drone
-            current_time = pygame.time.get_ticks()
-            if current_time - connection_check_time > 3000:  # After 3 seconds
-                if not drone_connected and not drone.image and not drone.navdata:
-                    title = f.render("No AR.Drone Connected", True, (255, 255, 255))
-                    screen.blit(title, (W//2 - title.get_width()//2, 30))
-                    
-                    instructions = [
-                        "Connect to AR.Drone WiFi network",
-                        "Ensure drone IP is 192.168.1.1",
-                        "",
-                        "Controls (when connected):",
-                        "RETURN - Takeoff (auto-resets emergency)",
-                        "SPACE - Land", 
-                        "BACKSPACE - Emergency Reset (if needed)",
-                        "W/S - Forward/Backward",
-                        "A/D - Left/Right",
-                        "UP/DOWN - Altitude",
-                        "LEFT/RIGHT - Turn",
-                        "1-0 - Speed (0.1-1.0)",
-                        "",
-                        "Note: After landing, press RETURN to takeoff again",
-                        "If takeoff fails, try BACKSPACE then RETURN",
-                        "",
-                        "ESC - Exit"
-                    ]
-                    
-                    y_offset = 70
-                    for line in instructions:
-                        if line:
-                            color = (255, 255, 0) if "Controls" in line else (200, 200, 200)
-                            text = f_small.render(line, True, color)
+            # Check if we should show test pattern (press T key)
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_t]:
+                # Show test pattern instead of instructions
+                import time
+                import math
+                t = time.time()
+                for y in range(H):
+                    for x in range(W):
+                        color_r = int(128 + 127 * math.sin(0.1 * x + t))
+                        color_g = int(128 + 127 * math.sin(0.1 * y + t + 2))
+                        color_b = int(128 + 127 * math.sin(0.1 * (x + y) + t + 4))
+                        screen.set_at((x, y), (color_r, color_g, color_b))
+                
+                f = pygame.font.Font(None, 32)
+                test_text = f.render("TEST PATTERN - Press T to toggle", True, (255, 255, 255))
+                screen.blit(test_text, (W//2 - test_text.get_width()//2, H//2))
+            else:
+                # Check if we have any data from drone
+                current_time = pygame.time.get_ticks()
+                if current_time - connection_check_time > 3000:  # After 3 seconds
+                    if not drone_connected and not drone.image and not drone.navdata:
+                        title = f.render("No AR.Drone Connected", True, (255, 255, 255))
+                        screen.blit(title, (W//2 - title.get_width()//2, 30))
+                        
+                        instructions = [
+                            "Connect to AR.Drone WiFi network",
+                            "Ensure drone IP is 192.168.1.1",
+                            "",
+                            "Controls (when connected):",
+                            "RETURN - Takeoff (auto-resets emergency)",
+                            "SPACE - Land", 
+                            "BACKSPACE - Emergency Reset (if needed)",
+                            "W/S - Forward/Backward",
+                            "A/D - Left/Right",
+                            "UP/DOWN - Altitude",
+                            "LEFT/RIGHT - Turn",
+                            "1-0 - Speed (0.1-1.0)",
+                            "",
+                            "T - Toggle test pattern (for video testing)",
+                            "",
+                            "Note: After landing, press RETURN to takeoff again",
+                            "If takeoff fails, try BACKSPACE then RETURN",
+                            "",
+                            "ESC - Exit"
+                        ]
+                        
+                        y_offset = 70
+                        for line in instructions:
+                            if line:
+                                color = (255, 255, 0) if "Controls" in line else (200, 200, 200)
+                                text = f_small.render(line, True, color)
+                                screen.blit(text, (20, y_offset))
+                            y_offset += 18
+                        
+                        # Add diagnostic information
+                        diag_info = [
+                            f"Image data: {'Available' if drone.image else 'None'}",
+                            f"Nav data: {'Available' if drone.navdata else 'None'}",
+                            f"Image size: {len(drone.image) if drone.image else 0} bytes"
+                        ]
+                        
+                        y_offset += 20
+                        for info in diag_info:
+                            text = f_small.render(info, True, (100, 255, 100))
                             screen.blit(text, (20, y_offset))
-                        y_offset += 18
-                else:
-                    pygame.display.set_caption("AR.Drone Demo - No Video Signal")
+                            y_offset += 16
+                    else:
+                        pygame.display.set_caption("AR.Drone Demo - No Video Signal")
 
         pygame.display.flip()
         clock.tick(50)

@@ -47,11 +47,13 @@ class ARDroneNetworkProcess(multiprocessing.Process):
 
     def run(self):
         video_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        video_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         video_socket.setblocking(0)
         video_socket.bind(('', libardrone.ARDRONE_VIDEO_PORT))
         video_socket.sendto(b"\x01\x00\x00\x00", ('192.168.1.1', libardrone.ARDRONE_VIDEO_PORT))
 
         nav_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        nav_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         nav_socket.setblocking(0)
         nav_socket.bind(('', libardrone.ARDRONE_NAVDATA_PORT))
         nav_socket.sendto(b"\x01\x00\x00\x00", ('192.168.1.1', libardrone.ARDRONE_NAVDATA_PORT))

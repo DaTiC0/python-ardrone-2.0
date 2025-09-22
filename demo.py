@@ -29,17 +29,37 @@ stream.
 
 
 import pygame
+import signal
+import sys
 
 import libardrone
 
+def signal_handler(sig, frame):
+    """Handle Ctrl+C gracefully"""
+    print("\nShutting down gracefully...")
+    pygame.quit()
+    sys.exit(0)
 
 def main():
+    # Set up signal handler for graceful shutdown
+    signal.signal(signal.SIGINT, signal_handler)
+    
     pygame.init()
     W, H = 320, 240
     screen = pygame.display.set_mode((W, H))
-    drone = libardrone.ARDrone()
+    pygame.display.set_caption("AR.Drone Demo - Connecting...")
+    
+    try:
+        drone = libardrone.ARDrone()
+    except Exception as e:
+        print(f"Failed to initialize drone: {e}")
+        pygame.quit()
+        return
+        
     clock = pygame.time.Clock()
     running = True
+    connection_check_time = pygame.time.get_ticks()
+    drone_connected = False
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -109,16 +129,70 @@ def main():
             hud = f.render('Battery: %i%%' % bat, True, hud_color)
             screen.blit(surface, (0, 0))
             screen.blit(hud, (10, 10))
+            drone_connected = True
+            pygame.display.set_caption("AR.Drone Demo - Connected")
         except:
-            pass
+            # No drone connected - show instructions
+            screen.fill((50, 50, 50))
+            f = pygame.font.Font(None, 24)
+            f_small = pygame.font.Font(None, 16)
+            
+            # Check if we have any data from drone
+            current_time = pygame.time.get_ticks()
+            if current_time - connection_check_time > 3000:  # After 3 seconds
+                if not drone_connected and not drone.image and not drone.navdata:
+                    title = f.render("No AR.Drone Connected", True, (255, 255, 255))
+                    screen.blit(title, (W//2 - title.get_width()//2, 30))
+                    
+                    instructions = [
+                        "Connect to AR.Drone WiFi network",
+                        "Ensure drone IP is 192.168.1.1",
+                        "",
+                        "Controls (when connected):",
+                        "RETURN - Takeoff (auto-resets emergency)",
+                        "SPACE - Land", 
+                        "BACKSPACE - Emergency Reset (if needed)",
+                        "W/S - Forward/Backward",
+                        "A/D - Left/Right",
+                        "UP/DOWN - Altitude",
+                        "LEFT/RIGHT - Turn",
+                        "1-0 - Speed (0.1-1.0)",
+                        "",
+                        "Note: After landing, press RETURN to takeoff again",
+                        "If takeoff fails, try BACKSPACE then RETURN",
+                        "",
+                        "ESC - Exit"
+                    ]
+                    
+                    y_offset = 70
+                    for line in instructions:
+                        if line:
+                            color = (255, 255, 0) if "Controls" in line else (200, 200, 200)
+                            text = f_small.render(line, True, color)
+                            screen.blit(text, (20, y_offset))
+                        y_offset += 18
+                else:
+                    pygame.display.set_caption("AR.Drone Demo - No Video Signal")
 
         pygame.display.flip()
         clock.tick(50)
         pygame.display.set_caption("FPS: %.2f" % clock.get_fps())
 
     print("Shutting down...", end='')
-    drone.halt()
-    print("Ok.")
+    try:
+        drone.halt()
+        print("Ok.")
+    except Exception as e:
+        print(f"Error during shutdown: {e}")
+    finally:
+        pygame.quit()
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nInterrupted by user")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+    finally:
+        pygame.quit()

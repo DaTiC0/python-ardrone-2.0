@@ -70,6 +70,10 @@ class ARDrone(object):
 
     def takeoff(self):
         """Make the drone takeoff."""
+        # Reset emergency state first
+        self.at(at_ref, False, True)
+        self.at(at_ref, False, False)
+        # Trim and takeoff
         self.at(at_ftrim)
         self.at(at_config, "control:altitude_max", "20000")
         self.at(at_ref, True)
@@ -383,7 +387,8 @@ def decode_navdata(packet):
             offset += struct.calcsize("c")
         # navdata_tag_t in navdata-common.h
         if id_nr == 0:
-            values = struct.unpack_from("IIfffIfffI", "".join(values))
+            # Decode bytes to a single byte string before unpacking
+            values = struct.unpack_from("IIfffIfffI", b"".join(values))
             values = dict(zip(['ctrl_state', 'battery', 'theta', 'phi', 'psi', 'altitude', 'vx', 'vy', 'vz', 'num_frames'], values))
             # convert the millidegrees into degrees and round to int, as they
             # are not so precise anyways

@@ -7,14 +7,14 @@ A video of the library controlling a drone in action (click to jump to the video
 Getting Started:
 ----------------
 
+
 ```python
->>> import libardrone
->>> drone = libardrone.ARDrone()
->>> # You might need to call drone.reset() before taking off if the drone is in
->>> # emergency mode
->>> drone.takeoff()
->>> drone.land()
->>> drone.halt()
+import libardrone
+drone = libardrone.ARDrone()
+# You might need to call drone.reset() before taking off if the drone is in emergency mode
+drone.takeoff()
+drone.land()
+drone.halt()
 ```
 
 The drone's property `image` contains always the latest image from the camera.
@@ -43,26 +43,41 @@ Here is a [video] of the library in action:
 Repository:
 -----------
 
-The public repository is located here:
 
-  git://github.com/venthur/python-ardrone.git
+
+This repository is a fork of the original AR.Drone Python library.
+Original repository: https://github.com/venthur/python-ardrone
+
+This fork is maintained at:
+  https://github.com/DaTiC0/python-ardrone-2.0
 
 
 Requirements:
 -------------
 
-This software was tested with the following setup:
 
-  * Python 2.6.6
-  * Psyco 1.6 (recommended)
-  * Pygame 1.8.1 (only for the demo)
+Requirements & Installation:
+---------------------------
+
+Tested and updated for:
+  * Python 3.12+
+  * Pygame 2.x (only for the demo)
   * Unmodified AR.Drone firmware 1.5.1
+
+To install dependencies:
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install pygame
+```
+
+Psyco is no longer required or supported. All code is now Python 3 compatible.
 
 
 License:
 --------
 
-This software is published under the terms of the MIT License:
 
+This software is published under the terms of the MIT License:
   http://www.opensource.org/licenses/mit-license.php
 
